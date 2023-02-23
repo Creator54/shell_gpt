@@ -11,7 +11,7 @@ setup(
     install_requires=[
         "typer~=0.7.0",
         "requests~=2.28.2",
-        "rich==13.3.1",
+        "rich==13.0.0",
     ],
     entry_points={
         "console_scripts": ["sgpt = sgpt:entry_point"],
