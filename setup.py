@@ -3,22 +3,22 @@ from setuptools import setup, find_packages
 # pylint: disable=consider-using-with
 setup(
     name="shell_gpt",
-    version="0.5.0",
+    version="0.7.0",
     packages=find_packages(),
-    py_modules=[
-        "sgpt",
-    ],
     install_requires=[
         "typer~=0.7.0",
         "requests~=2.28.2",
         "rich==13.0.0",
     ],
     entry_points={
-        "console_scripts": ["sgpt = sgpt:entry_point"],
+        "console_scripts": ["sgpt = sgpt:cli"],
     },
     author="Farkhod Sadykov",
     author_email="farkhod@sadykov.dev",
-    description="CLI App allows to query OpenAI GPT-3 models using API.",
+    description=(
+        "A command-line productivity tool powered by ChatGPT, "
+        "will help you accomplish your tasks faster and more efficiently."
+    ),
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/ther1d/shell_gpt",

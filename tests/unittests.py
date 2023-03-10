@@ -1,14 +1,14 @@
 import unittest
 import requests_mock
 import requests
-import sgpt
+from sgpt import ChatGPT
 
 
 class TestMain(unittest.TestCase):
+    API_URL = ChatGPT.API_URL
+
     def setUp(self):
         self.prompt = "What is the capital of France?"
-        self.model = "text-davinci-003"
-        self.max_tokens = 2048
         self.shell = False
         self.execute = False
         self.code = False
@@ -18,18 +18,20 @@ class TestMain(unittest.TestCase):
         self.temperature = 1.0
         self.top_p = 1.0
         self.response_text = "Paris"
+        self.model = "gpt-3.5-turbo"
+        self.chat_gpt = ChatGPT(self.api_key)
 
     @requests_mock.Mocker()
     def test_openai_request(self, mock):
-        mock.post(sgpt.API_URL, json={"choices": [{"text": self.response_text}]}, status_code=200)
-        result = sgpt.openai_request(
-            self.prompt, self.model, self.max_tokens, self.api_key, self.temperature, self.top_p, spinner=self.spinner
+        mocked_json = {"choices": [{"message": {"content": self.response_text}}]}
+        mock.post(self.API_URL, json=mocked_json, status_code=200)
+        result = self.chat_gpt.get_completion(
+            self.prompt, self.model, self.temperature, self.top_p, caching=False
         )
         self.assertEqual(result, self.response_text)
         expected_json = {
-            "prompt": self.prompt,
-            "model": self.model,
-            "max_tokens": self.max_tokens,
+            "messages": [{"role": "user", "content": self.prompt}],
+            "model": "gpt-3.5-turbo",
             "temperature": self.temperature,
             "top_p": self.top_p,
         }
@@ -41,16 +43,10 @@ class TestMain(unittest.TestCase):
 
     @requests_mock.Mocker()
     def test_openai_request_fail(self, mock):
-        mock.post(sgpt.API_URL, status_code=400)
+        mock.post(self.API_URL, status_code=400)
         with self.assertRaises(requests.exceptions.HTTPError):
-            sgpt.openai_request(
-                self.prompt,
-                self.model,
-                self.max_tokens,
-                self.api_key,
-                self.temperature,
-                self.top_p,
-                spinner=self.spinner,
+            self.chat_gpt.get_completion(
+                self.prompt, self.model, self.temperature, self.top_p, caching=False
             )
 
 
