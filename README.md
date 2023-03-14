@@ -9,7 +9,9 @@ A command-line productivity tool powered by OpenAI's ChatGPT (GPT-3.5). As devel
 ```shell
 pip install shell-gpt --user
 ```
-On first start you would need to generate and provide your API key, get one [here](https://beta.openai.com/account/api-keys).
+You'll need an OpenAI API key, you can generate one [here](https://beta.openai.com/account/api-keys).
+
+If the`$OPENAI_API_KEY` environment variable is set it will be used, otherwise, you will be prompted for your key which will then be stored in `~/.config/shell-gpt/api-key.txt`.
 
 ## Usage
 `sgpt` has a variety of use cases, including simple queries, shell queries, and code queries.
@@ -203,8 +205,19 @@ Use the provided `Dockerfile` to build a container:
 docker build -t sgpt .
 ```
 
-You may use a named volume (therefore sgpt will ask your API key only once) to run the container:
+Run the container using the `OPENAI_API_KEY` environment variable, and a docker volume to store cache:
 ```shell
-docker run --rm -ti -v gpt-config:/home/app/.config/shell-gpt sgpt "what are the colors of a rainbow"
+docker run --rm \
+           --env OPENAI_API_KEY="your OPENAI API key" \
+           --volume gpt-cache:/tmp/shell_gpt \
+       sgpt --chat rainbow "what are the colors of a rainbow"
 ```
 
+Example of a conversation, using an alias and the `OPENAI_API_KEY` environment variable:
+```shell
+alias sgpt="docker run --rm --env OPENAI_API_KEY --volume gpt-cache:/tmp/shell_gpt sgpt"
+export OPENAI_API_KEY="your OPENAI API key"
+sgpt --chat rainbow "what are the colors of a rainbow"
+sgpt --chat rainbow "inverse the list of your last answer"
+sgpt --chat rainbow "translate your last answer in french"
+```
